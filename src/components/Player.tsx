@@ -1,59 +1,37 @@
-import { DefaultUi, Player, Youtube } from '@vime/react'
-import { gql, useQuery } from '@apollo/client';
-import { CaretRight, DiscordLogo, FileArrowDown, Image, Lightning } from "phosphor-react";
+import { DefaultUi, Player, Youtube } from "@vime/react";
+import {
+  CaretRight,
+  DiscordLogo,
+  FileArrowDown,
+  Image,
+  Lightning,
+} from "phosphor-react";
 
-import '@vime/core/themes/default.css'
-
-const GET_LESSON_BY_SLUG_QUERY = gql`
-  query GetLessonBySlug($slug: String) {
-    lesson(where: {slug: $slug}) {
-      title
-      videoId
-      description
-      teacher {
-        name
-        bio
-        avatarURL
-      }
-    }
-  }
-`
-
-interface GetLessonBySlugResponse {
-  lesson: {
-    title: string
-    videoId: string
-    description: string
-    teacher: {
-      name: string
-      bio: string
-      avatarURL: string
-    }
-  }
-}
+import "@vime/core/themes/default.css";
+import { useGetLessonBySlugQuery } from "../graphql/generated";
 
 interface VideoProps {
   lessonSlug: string;
 }
 
 function Players(props: VideoProps) {
-  const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG_QUERY, {
+  const { data } = useGetLessonBySlugQuery({
     variables: {
-      slug: props.lessonSlug
+      slug: props.lessonSlug,
     },
-    fetchPolicy: 'no-cache'
-  })
+    fetchPolicy: "no-cache",
+  });
 
-  if (!data) {
+  if (!data || !data.lesson) {
     return (
       <div className="flex flex-col justify-center items-center">
         <div className="text-center">
-          <div className="text-gray-500">
+          <div className="text-gray-500  max-w-[1100px] max-h-[68vh]">
             Carregando...
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -70,34 +48,44 @@ function Players(props: VideoProps) {
       <div className="p-8 max-w-[1100px] mx-auto">
         <div className="flex items-start gap-16">
           <div className="flex-1">
-            <h1 className="text-2xl font-bold">
-              {data.lesson.title}
-            </h1>
+            <h1 className="text-2xl font-bold">{data.lesson.title}</h1>
             <p className="mt-4 text-gray-200 leading-relaxed">
               💻 {data.lesson.description}
             </p>
 
-            <div className="flex items-center gap-4 mt-6">
-              <img
-                className="h-16 w-16 rounded-full bottom-2 border-blue-400"
-                src={data.lesson.teacher.avatarURL}
-                alt=""
-              />
+            {data.lesson.teacher && (
+              <div className="flex items-center gap-4 mt-6">
+                <img
+                  className="h-16 w-16 rounded-full bottom-2 border-blue-400"
+                  src={data.lesson.teacher.avatarURL}
+                  alt=""
+                />
 
-              <div className="leading-relaxed">
-                <strong className="font-bold text-2xl block">{data.lesson.teacher.name}</strong>
-                <span className="text-gray-200 text-sm block">{data.lesson.teacher.bio}</span>
+                <div className="leading-relaxed">
+                  <strong className="font-bold text-2xl block">
+                    {data.lesson.teacher.name}
+                  </strong>
+                  <span className="text-gray-200 text-sm block">
+                    {data.lesson.teacher.bio}
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-4">
-            <a href="" className="p-4 text-sm bg-green-500 flex items-center rounded font-bold uppercase gap-2 justify-center hover:bg-green-700 transition-colors">
+            <a
+              href=""
+              className="p-4 text-sm bg-green-500 flex items-center rounded font-bold uppercase gap-2 justify-center hover:bg-green-700 transition-colors"
+            >
               <DiscordLogo size={24} />
               Grupo Discord
             </a>
 
-            <a href="" className="p-4 text-sm border border-blue-500 flex items-center rounded font-bold uppercase gap-2 justify-center hover:bg-blue-500 hover:text-gray-800 transition-colors">
+            <a
+              href=""
+              className="p-4 text-sm border border-blue-500 flex items-center rounded font-bold uppercase gap-2 justify-center hover:bg-blue-500 hover:text-gray-800 transition-colors"
+            >
               <Lightning size={24} />
               Challenge
             </a>
@@ -105,14 +93,18 @@ function Players(props: VideoProps) {
         </div>
 
         <div className="gap-8 mt-20 grid grid-cols-2">
-          <a href="" className="bg-gray-700 rounded overflow-hidden flex items-stretch gap-6 hover:bg-gray-500 transition-colors">
+          <a
+            href=""
+            className="bg-gray-700 rounded overflow-hidden flex items-stretch gap-6 hover:bg-gray-500 transition-colors"
+          >
             <div className="bg-green-800 h-full p-6 flex items-center">
               <FileArrowDown size={40} />
             </div>
             <div className="py-6 leading-relaxed">
               <strong className="text-2xl">Material de Apoio</strong>
               <p className="text-sm text-gray-200 mt-2">
-                Utilize o material de apoio para ajudar você a entender o que está acontecendo.
+                Utilize o material de apoio para ajudar você a entender o que
+                está acontecendo.
               </p>
             </div>
             <div className="h-full p-6 flex items-center">
@@ -120,7 +112,10 @@ function Players(props: VideoProps) {
             </div>
           </a>
 
-          <a href="" className="bg-gray-700 rounded overflow-hidden flex items-stretch gap-6 hover:bg-gray-500 transition-colors">
+          <a
+            href=""
+            className="bg-gray-700 rounded overflow-hidden flex items-stretch gap-6 hover:bg-gray-500 transition-colors"
+          >
             <div className="bg-green-800 h-full p-6 flex items-center">
               <Image size={40} />
             </div>
@@ -137,7 +132,7 @@ function Players(props: VideoProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default Players;
