@@ -66,7 +66,7 @@ function Lesson(props: LessonProps) {
 
         <strong
           className={`mt-5 block ${
-            isActiveLesson ? "text-white" : "text-gray-200"
+            isActiveLesson ? "text-white text-base" : "text-gray-200"
           }`}
         >
           {props.title}
